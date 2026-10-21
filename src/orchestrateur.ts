@@ -5,9 +5,16 @@ import { rechercheMarketing } from "./agents/rechercheMarketing.js";
 import { postsReseauxSociaux } from "./agents/postsReseauxSociaux.js";
 import { analyseDonnees } from "./agents/analyseDonnees.js";
 import { presentations } from "./agents/presentations.js";
+import { prospection } from "./agents/prospection.js";
 
 // Pour recruter un nouvel agent : crée son fichier dans src/agents/ et ajoute-le ici.
-const equipe: DefinitionAgent[] = [rechercheMarketing, postsReseauxSociaux, analyseDonnees, presentations];
+const equipe: DefinitionAgent[] = [
+  prospection,
+  rechercheMarketing,
+  postsReseauxSociaux,
+  analyseDonnees,
+  presentations,
+];
 
 // Chaque agent devient un outil de l'orchestrateur : appeler l'outil = déléguer la tâche à l'agent.
 const outilsDelegation = equipe.map((agent) =>

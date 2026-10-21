@@ -1,8 +1,12 @@
+import { readFileSync } from "node:fs";
 import Anthropic from "@anthropic-ai/sdk";
 
 const client = new Anthropic();
 
 export const MODELE = "claude-opus-5-5";
+
+// Le contexte de l'entreprise (CONTEXTE.md) est donné à chaque agent, avant ses propres instructions.
+const CONTEXTE = readFileSync(new URL("../CONTEXTE.md", import.meta.url), "utf8");
 
 type Outil = Parameters<typeof client.beta.messages.toolRunner>[0]["tools"][number];
 
@@ -26,7 +30,7 @@ export async function lancerAgent(agent: DefinitionAgent, tache: string): Promis
   const runner = client.beta.messages.toolRunner({
     model: MODELE,
     max_tokens: 16000,
-    system: agent.instructions,
+    system: `${CONTEXTE}\n\n---\n\n${agent.instructions}`,
     tools: agent.outils ?? [],
     output_config: { effort: agent.effort ?? "medium" },
     // Si le modèle refuse une demande, l'API la relance automatiquement sur un modèle de secours.

@@ -25,6 +25,7 @@ npm start -- "Prépare le lancement de notre nouvelle gourde réutilisable : ét
 - `src/orchestrateur.ts`: le directeur. Chaque agent de l'équipe devient un **outil** :
   appeler l'outil revient à déléguer une tâche à cet agent.
 - `src/agents/`: un fichier par agent (nom de l'outil, description, instructions, outils propres).
+  - `prospection.ts` : interroge les sites d'annonces (Leboncoin, SeLoger, Jinka, PAP…)
   - `rechercheMarketing.ts` : utilise la recherche web
   - `postsReseauxSociaux.ts`
   - `analyseDonnees.ts`
