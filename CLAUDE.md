@@ -53,6 +53,13 @@ L'agent passe par les outils `web_search` et `web_fetch` de l'API Anthropic, lim
 n'a accès qu'aux pages publiques que ces outils parviennent à lire. Certains sites (Leboncoin, SeLoger)
 protègent leurs pages contre la lecture automatique : les résultats peuvent être partiels.
 
+## Veille automatique
+
+Une tâche planifiée lance une veille deux fois par jour (matin et fin d'après-midi, heure de Paris) :
+elle cherche les annonces qui respectent les critères de `CONTEXTE.md`, compare avec
+`suivi/annonces-vues.md`, envoie une notification avec les **nouveaux** biens, puis ajoute ceux-ci au fichier.
+Pour être alerté en temps réel, une alerte Jinka avec les mêmes critères complète cette veille.
+
 ## Règles pour faire évoluer le code
 
 - Code, commentaires, prompts et messages en **français**, dans le style des fichiers existants.
