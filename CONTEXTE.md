@@ -34,7 +34,7 @@ Les critères **obligatoires** sont éliminatoires ; les **souhaités** servent 
 
 ### Critères financiers (les plus importants)
 
-- **Prix d'achat** : maximum [à compléter]
+- **Prix d'achat** : maximum 200 000 €, frais d'agence inclus
 - **Décote** par rapport au prix du marché du secteur : minimum [à compléter, ex. 15 %]
 - **Marge nette visée** sur l'opération : minimum [à compléter, ex. 15 à 20 % du prix de revient]
 - **Durée de l'opération** (achat → revente) : maximum [à compléter, ex. 12 mois]
@@ -68,7 +68,7 @@ au moins 5 « oui », elle est ajoutée au tableau de bord**, même si d'autres 
 1. Appartement, à l'achat
 2. À Rennes, Bruz ou Cesson-Sévigné
 3. Surface autour de 55 m² (50 à 60 m²)
-4. Prix sous le budget maximum (tant que le budget n'est pas renseigné, ce critère compte comme « oui »)
+4. Prix sous le budget maximum de 200 000 €, frais d'agence inclus
 5. Au moins 2 pièces, dont 1 chambre séparée
 6. DPE de C à G (ni A ni B)
 7. Dans l'ancien, avec des travaux à refaire
