@@ -4,11 +4,11 @@
 
 ## Qui nous sommes
 
-- **Nom** : [à compléter]
+- **Nom** : FC
 - **Métier** : recherche de biens immobiliers (appartements, maisons, locaux) pour le compte de nos clients,
   selon des critères précis. Nous trouvons le bien qui correspond, le client n'a pas à chercher lui-même.
-- **Zone couverte** : [à compléter : ville(s), départements]
-- **Types de projets** : [à compléter : achat, location, investissement locatif…]
+- **Zone couverte** : Rennes, Bruz , Cesson 
+- **Types de projets** : Achat
 
 ## Notre promesse : la réactivité
 
