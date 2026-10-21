@@ -123,6 +123,12 @@ dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
 .btn.plein { background: var(--accent); color: var(--surface); }
 .btn.vide { background: transparent; color: var(--accent); }
 .vu-le { color: var(--muted); font-size: 0.8rem; }
+.btn[aria-disabled="true"] { border-color: var(--line); color: var(--muted); background: transparent; cursor: not-allowed; }
+.commandes { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.commandes .etat-cmd { color: var(--muted); font-size: 0.85rem; min-width: 0; }
+.commandes .etat-cmd.ok { color: var(--good); }
+.commandes .etat-cmd.ko { color: var(--bad); }
+.btn[disabled] { opacity: 0.6; cursor: progress; }
 
 .vide-etat { background: var(--surface); border: 1px dashed var(--line); border-radius: 12px; padding: 28px 20px; text-align: center; color: var(--muted); }
 .vide-etat strong { display: block; color: var(--fg); font-family: var(--font-display); font-size: 1.1rem; margin-bottom: 4px; }
@@ -145,6 +151,12 @@ dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
     </div>
     <div class="maj" id="maj">Chargement…</div>
   </header>
+
+  <div class="commandes">
+    <button class="btn vide" id="btn-actualiser" type="button">↻ Actualiser</button>
+    <button class="btn plein" id="btn-recherche" type="button">Lancer une recherche maintenant</button>
+    <span class="etat-cmd" id="etat-cmd" role="status"></span>
+  </div>
 
   <div class="alerte" id="alerte" hidden></div>
 
@@ -306,6 +318,10 @@ function fiche(a) {
     lien.href = a.lien; lien.target = "_blank"; lien.rel = "noopener";
     lien.addEventListener("click", () => { if (!s.consulteeLe) enregistrer(a.id, { consulteeLe: new Date().toISOString() }); });
     gauche.append(lien);
+  } else {
+    const sansLien = creer("span", "btn", a.exemple ? "Pas de lien (exemple)" : "Lien non disponible");
+    sansLien.setAttribute("aria-disabled", "true");
+    gauche.append(sansLien);
   }
   const vue = creer("button", "btn vide", s.consulteeLe ? "Marquer non consultée" : "Marquer consultée");
   vue.type = "button";
@@ -381,6 +397,43 @@ function signaler(msg) {
   al.textContent = msg; al.hidden = false;
 }
 
+const TACHE_VEILLE = "trig_01LKHg5RZumRfafNNfk3ZZLf";
+
+function etatCommande(msg, ton) {
+  const el = document.getElementById("etat-cmd");
+  el.textContent = msg;
+  el.className = "etat-cmd" + (ton ? " " + ton : "");
+}
+
+document.getElementById("btn-recherche").addEventListener("click", async (ev) => {
+  const b = ev.currentTarget;
+  const mcp = await window.claude?.use?.("mcp");
+  if (!mcp) { etatCommande("Lancement impossible depuis cette page. Ouvrez-la sur claude.ai.", "ko"); return; }
+  b.disabled = true;
+  etatCommande("Lancement de la recherche…");
+  try {
+    await mcp.callTool("Claude Code Remote", "fire_trigger", { trigger_id: TACHE_VEILLE }, { cache: false });
+    etatCommande("Recherche lancée. Les nouvelles annonces apparaîtront ici d'ici quelques minutes, avec une notification.", "ok");
+  } catch (e) {
+    const code = e && e.code;
+    if (code === "approval_required" || code === "not_in_manifest") {
+      etatCommande("Autorisez la page à lancer la veille (fenêtre claude.ai), puis réessayez.", "ko");
+    } else if (code === "needs_reauth") {
+      etatCommande("Reconnectez Claude Code Remote dans claude.ai › Paramètres › Connecteurs.", "ko");
+    } else if (code === "server_not_connected" || code === "selection_required") {
+      etatCommande("Connecteur Claude Code Remote indisponible pour ce compte.", "ko");
+    } else if (code === "server_unavailable" || code === "upstream_error") {
+      etatCommande("Réponse incertaine : la recherche a peut-être démarré. Attendez quelques minutes avant de relancer.", "ko");
+    } else if (code === "tool_error") {
+      etatCommande("La veille a refusé le lancement : " + (e.message || "erreur inconnue") + ".", "ko");
+    } else {
+      etatCommande("Lancement impossible (" + (code || "erreur") + ").", "ko");
+    }
+  } finally {
+    b.disabled = false;
+  }
+});
+
 (async () => {
   const db = await window.claude?.use?.("db");
   if (!db) {
@@ -388,7 +441,8 @@ function signaler(msg) {
     signaler("Les annonces ne peuvent pas être chargées ici. Ouvrez cette page depuis claude.ai en étant connecté.");
     return;
   }
-  db.collection("annonces").onSnapshot((snap) => {
+  const collection = db.collection("annonces");
+  const recevoir = (snap) => {
     etat.annonces = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
     const derniere = etat.annonces.map((x) => x.majLe || x.vueLe).filter(Boolean).sort().pop();
     texte(document.getElementById("maj"), derniere ? "Mise à jour " + dateHeure.format(new Date(derniere)) : "Aucune annonce pour l'instant");
@@ -398,7 +452,21 @@ function signaler(msg) {
       document.getElementById("liste").replaceChildren(vide);
     }
     afficher();
-  }, (e) => signaler("Chargement des annonces impossible : " + e.message));
+  };
+  collection.onSnapshot(recevoir, (e) => signaler("Chargement des annonces impossible : " + e.message));
+
+  document.getElementById("btn-actualiser").addEventListener("click", async (ev) => {
+    const b = ev.currentTarget;
+    b.disabled = true;
+    try {
+      recevoir(await collection.get());
+      etatCommande("Actualisé à " + new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit" }).format(new Date()), "ok");
+    } catch (e) {
+      etatCommande("Actualisation impossible : " + (e && e.message ? e.message : "réessayez."), "ko");
+    } finally {
+      b.disabled = false;
+    }
+  });
 
   const user = await window.claude.use("user");
   const uid = user ? await user.id() : null;
