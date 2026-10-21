@@ -48,6 +48,7 @@ Sites interrogés (liste `SITES_ANNONCES` dans `src/agents/prospection.ts`) :
 | ouestfrance-immo.com | Portail régional, fort en Bretagne |
 | logic-immo.com | Portail d'agences complémentaire |
 | immobilier.notaires.fr | Ventes de notaires, dont successions et ventes aux enchères |
+| superimmo.com | Agrégateur d'annonces d'agences, filtre « à rénover », lecture automatique autorisée (10 s entre deux pages) |
 
 L'agent passe par les outils `web_search` et `web_fetch` de l'API Anthropic, limités à ces domaines. Il
 n'a accès qu'aux pages publiques que ces outils parviennent à lire. Certains sites (Leboncoin, SeLoger)

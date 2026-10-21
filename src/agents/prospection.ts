@@ -10,6 +10,7 @@ export const SITES_ANNONCES = [
   "ouestfrance-immo.com",
   "logic-immo.com",
   "immobilier.notaires.fr",
+  "superimmo.com",
 ];
 
 export const prospection: DefinitionAgent = {
