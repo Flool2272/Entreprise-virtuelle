@@ -172,6 +172,7 @@ dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
     <div class="filtres" role="group" aria-label="Filtrer les annonces" id="filtres"></div>
     <label class="tri" for="tri">Trier
       <select id="tri">
+        <option value="score">Meilleures opportunités</option>
         <option value="recent">Plus récentes</option>
         <option value="m2">Prix au m² croissant</option>
         <option value="prix">Prix croissant</option>
@@ -187,6 +188,7 @@ dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
 
 <script>
 const FILTRES = [
+  { id: "pertinentes", label: "À étudier" },
   { id: "toutes", label: "Toutes" },
   { id: "nouvelles", label: "Nouvelles" },
   { id: "nonvues", label: "Non consultées" },
@@ -197,7 +199,7 @@ const FILTRES = [
 const VERDICTS = {
   "à visiter en priorité": "prio", "à étudier": "etudier", "à écarter": "ecarter",
 };
-const etat = { annonces: [], suivi: {}, filtre: "toutes", tri: "recent", suiviRef: null };
+const etat = { annonces: [], suivi: {}, filtre: "pertinentes", tri: "score", suiviRef: null };
 
 try {
   const f = localStorage.getItem("veille-filtre"); if (f && FILTRES.some((x) => x.id === f)) etat.filtre = f;
@@ -222,9 +224,11 @@ function variation(a) {
 function prixM2(a) { return a.prix && a.surface ? a.prix / a.surface : Infinity; }
 function estNouvelle(a) { return a.vueLe && Date.now() - new Date(a.vueLe).getTime() < 48 * 3600 * 1000; }
 function suiviDe(a) { return etat.suivi[a.id] || {}; }
+function rangVerdict(a) { const v = VERDICTS[String(a.verdict || "").toLowerCase()]; return v === "prio" ? 0 : v === "ecarter" ? 2 : 1; }
 
 function correspond(a, f) {
   const s = suiviDe(a);
+  if (f === "pertinentes") return rangVerdict(a) < 2;
   if (f === "nouvelles") return estNouvelle(a);
   if (f === "nonvues") return !s.consulteeLe;
   if (f === "vues") return !!s.consulteeLe;
@@ -358,12 +362,13 @@ function afficher() {
   }));
 
   const tris = {
+    score: (x, y) => rangVerdict(x) - rangVerdict(y) || (y.score ?? 0) - (x.score ?? 0) || prixM2(x) - prixM2(y),
     recent: (x, y) => String(y.vueLe || "").localeCompare(String(x.vueLe || "")),
     m2: (x, y) => prixM2(x) - prixM2(y),
     prix: (x, y) => (x.prix ?? Infinity) - (y.prix ?? Infinity),
     baisse: (x, y) => variation(x) - variation(y),
   };
-  const visibles = a.filter((x) => correspond(x, etat.filtre)).sort(tris[etat.tri] || tris.recent);
+  const visibles = a.filter((x) => correspond(x, etat.filtre)).sort(tris[etat.tri] || tris.score);
   const liste = document.getElementById("liste");
   if (!etat.annonces.length) return;
   if (!visibles.length) {
