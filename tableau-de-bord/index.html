@@ -1,0 +1,414 @@
+<title>Veille FC Rennes</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Mise en page : bandeau de synthèse, filtres en pilules, puis une liste de fiches annonces (une colonne sur téléphone, deux sur grand écran). */
+:root {
+  --bg: #f3f5f7;
+  --surface: #ffffff;
+  --fg: #1c2733;
+  --muted: #5d6b79;
+  --line: #dde3ea;
+  --accent: #1f5f8b;
+  --accent-soft: #e3eef6;
+  --good: #1d7a4a;
+  --good-soft: #e2f3ea;
+  --bad: #b3372b;
+  --bad-soft: #fbe7e4;
+  --warn: #9a6400;
+  --warn-soft: #fbf0d9;
+  --star: #c98a00;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11171d; --surface: #19222b; --fg: #e4eaf0; --muted: #96a3b0; --line: #2a3640;
+    --accent: #6fb1e0; --accent-soft: #1b3346; --good: #5ccf8f; --good-soft: #143426;
+    --bad: #f08a7e; --bad-soft: #3d1c19; --warn: #e6b450; --warn-soft: #3a2d12; --star: #f0b929;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11171d; --surface: #19222b; --fg: #e4eaf0; --muted: #96a3b0; --line: #2a3640;
+  --accent: #6fb1e0; --accent-soft: #1b3346; --good: #5ccf8f; --good-soft: #143426;
+  --bad: #f08a7e; --bad-soft: #3d1c19; --warn: #e6b450; --warn-soft: #3a2d12; --star: #f0b929;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.5;
+}
+.page {
+  max-width: 1080px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 48px;
+  display: flex; flex-direction: column; gap: 20px;
+}
+header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.75rem; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+.sous-titre { color: var(--muted); margin: 2px 0 0; }
+.maj { color: var(--muted); font-size: 0.85rem; font-family: var(--font-data); }
+
+.synthese { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.tuile {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px;
+  display: flex; flex-direction: column; gap: 2px; text-align: left; font: inherit; color: inherit; cursor: pointer;
+}
+.tuile:hover { border-color: var(--accent); }
+.tuile:focus-visible, .filtre:focus-visible, button:focus-visible, a:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.tuile b { font-family: var(--font-display); font-size: 1.6rem; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.tuile span { color: var(--muted); font-size: 0.82rem; letter-spacing: 0.02em; }
+.tuile.baisse b { color: var(--good); }
+.tuile.favoris b { color: var(--star); }
+
+.barre { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+.filtres { display: flex; flex-wrap: wrap; gap: 6px; }
+.filtre {
+  border: 1px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 999px;
+  padding: 6px 12px; font: inherit; font-size: 0.88rem; cursor: pointer;
+}
+.filtre[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+.filtre .n { font-family: var(--font-data); font-size: 0.8rem; opacity: 0.8; margin-left: 4px; }
+label.tri { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 0.88rem; }
+select { font: inherit; font-size: 0.88rem; color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 5px 8px; }
+
+.liste { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.fiche {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 10px; min-width: 0;
+}
+.fiche.non-vue { border-left: 4px solid var(--accent); }
+.fiche-tete { display: flex; gap: 10px; align-items: flex-start; justify-content: space-between; }
+.lieu { margin: 0; font-family: var(--font-display); font-weight: 500; font-size: 1.1rem; line-height: 1.25; min-width: 0; }
+.lieu small { display: block; font-family: var(--font-body); font-size: 0.8rem; color: var(--muted); font-weight: 400; margin-top: 2px; }
+.etoile {
+  border: 1px solid var(--line); background: transparent; border-radius: 8px; width: 36px; height: 36px; flex: none;
+  font-size: 1.15rem; line-height: 1; color: var(--muted); cursor: pointer;
+}
+.etoile[aria-pressed="true"] { color: var(--star); border-color: var(--star); }
+.chiffres { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; font-variant-numeric: tabular-nums; }
+.prix { font-family: var(--font-display); font-weight: 700; font-size: 1.45rem; }
+.m2 { font-family: var(--font-data); color: var(--muted); font-size: 0.85rem; }
+.evol { font-family: var(--font-data); font-size: 0.8rem; padding: 2px 8px; border-radius: 999px; }
+.evol.baisse { background: var(--good-soft); color: var(--good); }
+.evol.hausse { background: var(--bad-soft); color: var(--bad); }
+.puces { display: flex; flex-wrap: wrap; gap: 6px; font-size: 0.82rem; }
+.puce { border: 1px solid var(--line); border-radius: 6px; padding: 1px 7px; color: var(--muted); }
+.dpe { font-family: var(--font-data); font-weight: 500; border-radius: 4px; padding: 1px 7px; color: #10161c; }
+.dpe-A { background: #009a3d; color: #fff; } .dpe-B { background: #52b153; } .dpe-C { background: #a5cc74; }
+.dpe-D { background: #f4e70f; } .dpe-E { background: #f0b40f; } .dpe-F { background: #eb8235; } .dpe-G { background: #d7221f; color: #fff; }
+.dpe-x { background: var(--line); color: var(--muted); }
+.verdict { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; }
+.verdict.prio { background: var(--good-soft); color: var(--good); }
+.verdict.etudier { background: var(--warn-soft); color: var(--warn); }
+.verdict.ecarter { background: var(--bad-soft); color: var(--bad); }
+.exemple { font-size: 0.75rem; font-weight: 600; background: var(--accent-soft); color: var(--accent); padding: 2px 8px; border-radius: 4px; }
+details { border-top: 1px solid var(--line); padding-top: 8px; }
+summary { cursor: pointer; color: var(--accent); font-size: 0.88rem; font-weight: 500; }
+dl { display: grid; grid-template-columns: minmax(0, 9rem) minmax(0, 1fr); gap: 4px 12px; margin: 10px 0 0; font-size: 0.88rem; }
+dt { color: var(--muted); }
+dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.histo { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+.histo svg { flex: none; }
+.histo ol { list-style: none; margin: 0; padding: 0; font-family: var(--font-data); font-size: 0.8rem; color: var(--muted); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+.btn {
+  display: inline-flex; align-items: center; gap: 6px; border-radius: 8px; padding: 7px 12px; font: inherit; font-size: 0.88rem;
+  font-weight: 500; text-decoration: none; cursor: pointer; border: 1px solid var(--accent);
+}
+.btn.plein { background: var(--accent); color: var(--surface); }
+.btn.vide { background: transparent; color: var(--accent); }
+.vu-le { color: var(--muted); font-size: 0.8rem; }
+
+.vide-etat { background: var(--surface); border: 1px dashed var(--line); border-radius: 12px; padding: 28px 20px; text-align: center; color: var(--muted); }
+.vide-etat strong { display: block; color: var(--fg); font-family: var(--font-display); font-size: 1.1rem; margin-bottom: 4px; }
+.alerte { background: var(--warn-soft); color: var(--warn); border-radius: 8px; padding: 10px 14px; font-size: 0.9rem; }
+
+@media (max-width: 760px) {
+  .liste { grid-template-columns: minmax(0, 1fr); }
+  .synthese { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .fiche, .tuile, .filtre, .etoile { transition: border-color 0.15s, background-color 0.15s, color 0.15s; }
+}
+</style>
+
+<div class="page">
+  <header>
+    <div>
+      <h1>Veille FC Rennes</h1>
+      <p class="sous-titre">Appartements à rénover · Rennes, Bruz, Cesson-Sévigné</p>
+    </div>
+    <div class="maj" id="maj">Chargement…</div>
+  </header>
+
+  <div class="alerte" id="alerte" hidden></div>
+
+  <section class="synthese" aria-label="Synthèse">
+    <button class="tuile" data-filtre="nouvelles" type="button"><b id="t-nouvelles">–</b><span>Nouvelles (48 h)</span></button>
+    <button class="tuile" data-filtre="nonvues" type="button"><b id="t-nonvues">–</b><span>Pas encore consultées</span></button>
+    <button class="tuile favoris" data-filtre="favoris" type="button"><b id="t-favoris">–</b><span>Favoris</span></button>
+    <button class="tuile baisse" data-filtre="baisses" type="button"><b id="t-baisses">–</b><span>Prix en baisse</span></button>
+  </section>
+
+  <div class="barre">
+    <div class="filtres" role="group" aria-label="Filtrer les annonces" id="filtres"></div>
+    <label class="tri" for="tri">Trier
+      <select id="tri">
+        <option value="recent">Plus récentes</option>
+        <option value="m2">Prix au m² croissant</option>
+        <option value="prix">Prix croissant</option>
+        <option value="baisse">Plus forte baisse</option>
+      </select>
+    </label>
+  </div>
+
+  <section class="liste" id="liste" aria-live="polite">
+    <div class="vide-etat"><strong>Les annonces arrivent ici</strong>La veille ajoute les biens qui correspondent à vos critères chaque matin et chaque fin d'après-midi.</div>
+  </section>
+</div>
+
+<script>
+const FILTRES = [
+  { id: "toutes", label: "Toutes" },
+  { id: "nouvelles", label: "Nouvelles" },
+  { id: "nonvues", label: "Non consultées" },
+  { id: "vues", label: "Consultées" },
+  { id: "favoris", label: "Favoris" },
+  { id: "baisses", label: "Prix en baisse" },
+];
+const VERDICTS = {
+  "à visiter en priorité": "prio", "à étudier": "etudier", "à écarter": "ecarter",
+};
+const etat = { annonces: [], suivi: {}, filtre: "toutes", tri: "recent", suiviRef: null };
+
+try {
+  const f = localStorage.getItem("veille-filtre"); if (f && FILTRES.some((x) => x.id === f)) etat.filtre = f;
+  const t = localStorage.getItem("veille-tri"); if (t) etat.tri = t;
+} catch (e) {}
+document.getElementById("tri").value = etat.tri;
+
+const euros = new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
+const nombre = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 });
+const dateCourte = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" });
+const dateHeure = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+
+function historique(a) {
+  const h = Array.isArray(a.historiquePrix) ? a.historiquePrix.filter((p) => typeof p.prix === "number") : [];
+  return h.length ? h.slice().sort((x, y) => String(x.date).localeCompare(String(y.date))) : (typeof a.prix === "number" ? [{ date: a.vueLe, prix: a.prix }] : []);
+}
+function variation(a) {
+  const h = historique(a);
+  if (h.length < 2) return 0;
+  return h[h.length - 1].prix - h[0].prix;
+}
+function prixM2(a) { return a.prix && a.surface ? a.prix / a.surface : Infinity; }
+function estNouvelle(a) { return a.vueLe && Date.now() - new Date(a.vueLe).getTime() < 48 * 3600 * 1000; }
+function suiviDe(a) { return etat.suivi[a.id] || {}; }
+
+function correspond(a, f) {
+  const s = suiviDe(a);
+  if (f === "nouvelles") return estNouvelle(a);
+  if (f === "nonvues") return !s.consulteeLe;
+  if (f === "vues") return !!s.consulteeLe;
+  if (f === "favoris") return !!s.favori;
+  if (f === "baisses") return variation(a) < 0;
+  return true;
+}
+
+function texte(el, valeur) { el.textContent = valeur; return el; }
+function creer(tag, cls, contenu) {
+  const el = document.createElement(tag);
+  if (cls) el.className = cls;
+  if (contenu != null) el.textContent = contenu;
+  return el;
+}
+
+function courbe(h) {
+  const ns = "http://www.w3.org/2000/svg";
+  const w = 96, hh = 32, pad = 4;
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("width", w); svg.setAttribute("height", hh); svg.setAttribute("viewBox", `0 0 ${w} ${hh}`);
+  svg.setAttribute("aria-hidden", "true");
+  const prix = h.map((p) => p.prix);
+  const min = Math.min(...prix), max = Math.max(...prix), ecart = max - min || 1;
+  const pts = h.map((p, i) => [pad + (i * (w - 2 * pad)) / Math.max(1, h.length - 1), pad + ((max - p.prix) * (hh - 2 * pad)) / ecart]);
+  const couleur = prix[prix.length - 1] < prix[0] ? "var(--good)" : prix[prix.length - 1] > prix[0] ? "var(--bad)" : "var(--muted)";
+  const ligne = document.createElementNS(ns, "polyline");
+  ligne.setAttribute("points", pts.map((p) => p.join(",")).join(" "));
+  ligne.setAttribute("fill", "none"); ligne.setAttribute("stroke", couleur); ligne.setAttribute("stroke-width", "2");
+  ligne.setAttribute("stroke-linejoin", "round");
+  svg.appendChild(ligne);
+  const fin = document.createElementNS(ns, "circle");
+  const [x, y] = pts[pts.length - 1];
+  fin.setAttribute("cx", x); fin.setAttribute("cy", y); fin.setAttribute("r", "3"); fin.setAttribute("fill", couleur);
+  svg.appendChild(fin);
+  return svg;
+}
+
+function fiche(a) {
+  const s = suiviDe(a);
+  const el = creer("article", "fiche" + (s.consulteeLe ? "" : " non-vue"));
+
+  const tete = creer("div", "fiche-tete");
+  const lieu = creer("h2", "lieu", [a.ville, a.quartier].filter(Boolean).join(" · ") || "Lieu non indiqué");
+  const sous = creer("small", null, [a.site, a.vueLe ? "repérée le " + dateCourte.format(new Date(a.vueLe)) : null].filter(Boolean).join(" · "));
+  lieu.appendChild(sous);
+  const etoile = creer("button", "etoile", s.favori ? "★" : "☆");
+  etoile.type = "button";
+  etoile.setAttribute("aria-pressed", s.favori ? "true" : "false");
+  etoile.setAttribute("aria-label", s.favori ? "Retirer des favoris" : "Ajouter aux favoris");
+  etoile.addEventListener("click", () => enregistrer(a.id, { favori: !s.favori }));
+  tete.append(lieu, etoile);
+
+  const chiffres = creer("div", "chiffres");
+  chiffres.append(creer("span", "prix", typeof a.prix === "number" ? euros.format(a.prix) : "Prix non indiqué"));
+  if (prixM2(a) !== Infinity) chiffres.append(creer("span", "m2", nombre.format(prixM2(a)) + " €/m²"));
+  const v = variation(a);
+  if (v) {
+    const h = historique(a);
+    const pct = (v / h[0].prix) * 100;
+    chiffres.append(creer("span", "evol " + (v < 0 ? "baisse" : "hausse"), (v < 0 ? "▼ " : "▲ ") + euros.format(Math.abs(v)) + " (" + pct.toFixed(1).replace(".", ",") + " %)"));
+  }
+
+  const puces = creer("div", "puces");
+  if (a.exemple) puces.append(creer("span", "exemple", "Exemple"));
+  if (a.verdict) puces.append(creer("span", "verdict " + (VERDICTS[String(a.verdict).toLowerCase()] || "etudier"), a.verdict));
+  const lettre = String(a.dpe || "").toUpperCase();
+  puces.append(creer("span", "dpe " + (/^[A-G]$/.test(lettre) ? "dpe-" + lettre : "dpe-x"), "DPE " + (lettre || "?")));
+  if (a.surface) puces.append(creer("span", "puce", nombre.format(a.surface) + " m²"));
+  if (a.chambres != null) puces.append(creer("span", "puce", a.chambres + (a.chambres > 1 ? " chambres" : " chambre")));
+  if (a.etage) puces.append(creer("span", "puce", a.etage));
+
+  const det = creer("details");
+  det.append(creer("summary", null, "Détails et historique des prix"));
+  const dl = creer("dl");
+  [["État / travaux", a.etat], ["Chambre en plus", a.chambreSup], ["Signaux", a.signaux], ["Statut", a.statut === "retiree" ? "Annonce retirée" : null]]
+    .forEach(([k, val]) => { if (val) { dl.append(creer("dt", null, k), creer("dd", null, val)); } });
+  det.append(dl);
+  const h = historique(a);
+  if (h.length > 1) {
+    const histo = creer("div", "histo");
+    const ol = creer("ol");
+    h.slice().reverse().forEach((p) => ol.append(creer("li", null, (p.date ? dateCourte.format(new Date(p.date)) : "?") + " · " + euros.format(p.prix))));
+    histo.append(courbe(h), ol);
+    det.append(histo);
+  }
+
+  const actions = creer("div", "actions");
+  const gauche = creer("div", "puces");
+  if (a.lien) {
+    const lien = creer("a", "btn plein", "Voir l'annonce ↗");
+    lien.href = a.lien; lien.target = "_blank"; lien.rel = "noopener";
+    lien.addEventListener("click", () => { if (!s.consulteeLe) enregistrer(a.id, { consulteeLe: new Date().toISOString() }); });
+    gauche.append(lien);
+  }
+  const vue = creer("button", "btn vide", s.consulteeLe ? "Marquer non consultée" : "Marquer consultée");
+  vue.type = "button";
+  vue.addEventListener("click", () => enregistrer(a.id, { consulteeLe: s.consulteeLe ? null : new Date().toISOString() }));
+  gauche.append(vue);
+  actions.append(gauche);
+  if (s.consulteeLe) actions.append(creer("span", "vu-le", "Consultée le " + dateCourte.format(new Date(s.consulteeLe))));
+
+  el.append(tete, chiffres, puces, det, actions);
+  return el;
+}
+
+function afficher() {
+  const a = etat.annonces.filter((x) => x.statut !== "retiree" || suiviDe(x).favori);
+  texte(document.getElementById("t-nouvelles"), a.filter(estNouvelle).length);
+  texte(document.getElementById("t-nonvues"), a.filter((x) => !suiviDe(x).consulteeLe).length);
+  texte(document.getElementById("t-favoris"), a.filter((x) => suiviDe(x).favori).length);
+  texte(document.getElementById("t-baisses"), a.filter((x) => variation(x) < 0).length);
+
+  const filtres = document.getElementById("filtres");
+  filtres.replaceChildren(...FILTRES.map((f) => {
+    const b = creer("button", "filtre", f.label);
+    b.type = "button";
+    b.setAttribute("aria-pressed", etat.filtre === f.id ? "true" : "false");
+    b.append(creer("span", "n", String(a.filter((x) => correspond(x, f.id)).length)));
+    b.addEventListener("click", () => choisirFiltre(f.id));
+    return b;
+  }));
+
+  const tris = {
+    recent: (x, y) => String(y.vueLe || "").localeCompare(String(x.vueLe || "")),
+    m2: (x, y) => prixM2(x) - prixM2(y),
+    prix: (x, y) => (x.prix ?? Infinity) - (y.prix ?? Infinity),
+    baisse: (x, y) => variation(x) - variation(y),
+  };
+  const visibles = a.filter((x) => correspond(x, etat.filtre)).sort(tris[etat.tri] || tris.recent);
+  const liste = document.getElementById("liste");
+  if (!etat.annonces.length) return;
+  if (!visibles.length) {
+    const vide = creer("div", "vide-etat");
+    vide.append(creer("strong", null, "Aucune annonce dans ce filtre"), document.createTextNode("Choisissez « Toutes » pour revoir l'ensemble des biens repérés."));
+    liste.replaceChildren(vide);
+    return;
+  }
+  liste.replaceChildren(...visibles.map(fiche));
+}
+
+function choisirFiltre(id) {
+  etat.filtre = id;
+  try { localStorage.setItem("veille-filtre", id); } catch (e) {}
+  afficher();
+}
+document.querySelectorAll(".tuile").forEach((t) => t.addEventListener("click", () => choisirFiltre(t.dataset.filtre)));
+document.getElementById("tri").addEventListener("change", (e) => {
+  etat.tri = e.target.value;
+  try { localStorage.setItem("veille-tri", etat.tri); } catch (err) {}
+  afficher();
+});
+
+async function enregistrer(id, champs) {
+  if (!etat.suiviRef) { signaler("Connectez-vous à claude.ai pour enregistrer vos favoris et consultations."); return; }
+  etat.suivi[id] = { ...(etat.suivi[id] || {}), ...champs };
+  afficher();
+  try {
+    await etat.suiviRef.doc(id).set(etat.suivi[id]);
+  } catch (e) {
+    signaler("Modification non enregistrée : " + (e && e.message ? e.message : "réessayez dans un instant."));
+  }
+}
+
+function signaler(msg) {
+  const al = document.getElementById("alerte");
+  al.textContent = msg; al.hidden = false;
+}
+
+(async () => {
+  const db = await window.claude?.use?.("db");
+  if (!db) {
+    texte(document.getElementById("maj"), "Hors ligne");
+    signaler("Les annonces ne peuvent pas être chargées ici. Ouvrez cette page depuis claude.ai en étant connecté.");
+    return;
+  }
+  db.collection("annonces").onSnapshot((snap) => {
+    etat.annonces = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    const derniere = etat.annonces.map((x) => x.majLe || x.vueLe).filter(Boolean).sort().pop();
+    texte(document.getElementById("maj"), derniere ? "Mise à jour " + dateHeure.format(new Date(derniere)) : "Aucune annonce pour l'instant");
+    if (!etat.annonces.length) {
+      const vide = creer("div", "vide-etat");
+      vide.append(creer("strong", null, "Pas encore d'annonce"), document.createTextNode("La veille de 7h43 et 17h43 ajoutera ici les biens qui correspondent à vos critères."));
+      document.getElementById("liste").replaceChildren(vide);
+    }
+    afficher();
+  }, (e) => signaler("Chargement des annonces impossible : " + e.message));
+
+  const user = await window.claude.use("user");
+  const uid = user ? await user.id() : null;
+  if (!uid) return;
+  etat.suiviRef = db.collection("data/users/" + uid);
+  etat.suiviRef.onSnapshot((snap) => {
+    const suivi = {};
+    snap.docs.forEach((d) => { suivi[d.id] = d.data() || {}; });
+    etat.suivi = suivi;
+    afficher();
+  }, (e) => signaler("Favoris indisponibles : " + e.message));
+})();
+</script>

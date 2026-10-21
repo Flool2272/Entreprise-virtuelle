@@ -60,6 +60,10 @@ elle cherche les annonces qui respectent les critères de `CONTEXTE.md`, compare
 `suivi/annonces-vues.md`, envoie une notification avec les **nouveaux** biens, puis ajoute ceux-ci au fichier.
 Pour être alerté en temps réel, une alerte Jinka avec les mêmes critères complète cette veille.
 
+La veille alimente aussi le **tableau de bord** (`tableau-de-bord/index.html`, publié sur
+https://claude.ai/artifact/GpNgNTJs6z3jNTJc7UTUJ2) : collection `annonces` de sa base de données (une fiche par
+bien, avec `historiquePrix`), plus le suivi personnel (consultées, favoris) stocké par utilisateur.
+
 ## Règles pour faire évoluer le code
 
 - Code, commentaires, prompts et messages en **français**, dans le style des fichiers existants.
