@@ -60,6 +60,23 @@ Les critères **obligatoires** sont éliminatoires ; les **souhaités** servent 
 - **Localisation** : quartiers ou rues visés et à éviter [à compléter]
 - **Occupation** : libre (prioritaire) ou occupé (bail en cours, à prendre en compte dans le prix et le délai)
 
+### Règle d'ajout au tableau de bord (score sur 8)
+
+Chaque annonce repérée (alerte e-mail, site, recherche web) est notée sur ces 8 critères. **Dès qu'elle obtient
+au moins 5 « oui », elle est ajoutée au tableau de bord**, même si d'autres critères sont inconnus.
+
+1. Appartement, à l'achat
+2. À Rennes, Bruz ou Cesson-Sévigné
+3. Surface autour de 55 m² (50 à 60 m²)
+4. Prix sous le budget maximum (tant que le budget n'est pas renseigné, ce critère compte comme « oui »)
+5. Au moins 2 pièces, dont 1 chambre séparée
+6. DPE de C à G (ni A ni B)
+7. Dans l'ancien, avec des travaux à refaire
+8. Possibilité de créer une chambre supplémentaire
+
+Un critère qu'on ne peut pas vérifier (information absente de l'annonce ou de l'alerte) compte comme « non ».
+Le score et le détail des critères sont affichés sur la fiche du tableau de bord.
+
 ### Signaux d'opportunité
 
 - Bien en ligne depuis longtemps, ou dont le prix a baissé

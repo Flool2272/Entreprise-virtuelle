@@ -106,6 +106,7 @@ select { font: inherit; font-size: 0.88rem; color: var(--fg); background: var(--
 .verdict.prio { background: var(--good-soft); color: var(--good); }
 .verdict.etudier { background: var(--warn-soft); color: var(--warn); }
 .verdict.ecarter { background: var(--bad-soft); color: var(--bad); }
+.score { font-family: var(--font-data); font-size: 0.78rem; font-weight: 500; border: 1px solid var(--accent); color: var(--accent); border-radius: 4px; padding: 1px 7px; }
 .exemple { font-size: 0.75rem; font-weight: 600; background: var(--accent-soft); color: var(--accent); padding: 2px 8px; border-radius: 4px; }
 details { border-top: 1px solid var(--line); padding-top: 8px; }
 summary { cursor: pointer; color: var(--accent); font-size: 0.88rem; font-weight: 500; }
@@ -290,6 +291,11 @@ function fiche(a) {
   const puces = creer("div", "puces");
   if (a.exemple) puces.append(creer("span", "exemple", "Exemple"));
   if (a.verdict) puces.append(creer("span", "verdict " + (VERDICTS[String(a.verdict).toLowerCase()] || "etudier"), a.verdict));
+  if (typeof a.score === "number") {
+    const sc = creer("span", "score", "Critères " + a.score + "/8");
+    sc.title = "Nombre de critères de recherche remplis sur 8";
+    puces.append(sc);
+  }
   const lettre = String(a.dpe || "").toUpperCase();
   puces.append(creer("span", "dpe " + (/^[A-G]$/.test(lettre) ? "dpe-" + lettre : "dpe-x"), "DPE " + (lettre || "?")));
   if (a.surface) puces.append(creer("span", "puce", nombre.format(a.surface) + " m²"));
@@ -299,7 +305,7 @@ function fiche(a) {
   const det = creer("details");
   det.append(creer("summary", null, "Détails et historique des prix"));
   const dl = creer("dl");
-  [["État / travaux", a.etat], ["Chambre en plus", a.chambreSup], ["Signaux", a.signaux], ["Statut", a.statut === "retiree" ? "Annonce retirée" : null]]
+  [["Critères", a.criteresDetail], ["État / travaux", a.etat], ["Chambre en plus", a.chambreSup], ["Signaux", a.signaux], ["Statut", a.statut === "retiree" ? "Annonce retirée" : null]]
     .forEach(([k, val]) => { if (val) { dl.append(creer("dt", null, k), creer("dd", null, val)); } });
   det.append(dl);
   const h = historique(a);
