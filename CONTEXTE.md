@@ -41,15 +41,24 @@ Les critères **obligatoires** sont éliminatoires ; les **souhaités** servent 
 
 ### Critères sur le bien
 
-- **Type** : appartement, maison, immeuble, local commercial, terrain… [à compléter]
+**Obligatoires**
+
+- **Type** : appartement
+- **Surface** : 55 m² [à préciser : fourchette acceptée, ex. 50 à 60 m²]
+- **Construction** : dans l'ancien (pas de neuf)
+- **État** : travaux à refaire. Le bien doit pouvoir gagner de la valeur grâce à la rénovation ; un bien déjà
+  rénové n'a pas d'intérêt.
+- **Chambres** : au moins 1 chambre séparée. Plus de chambres n'est pas bloquant.
+- **Chambre supplémentaire** : le plan doit permettre d'en créer une de plus (séjour assez grand pour être
+  recoupé, pièce mal utilisée, cuisine à déplacer…). Pour chaque bien, l'agent indique si c'est possible et
+  comment.
+- **DPE** : pas un critère en soi, mais **exclure les biens classés A ou B** (trop peu de marge de progression,
+  donc peu de valeur à créer). Classes C à G acceptées.
+
+**À préciser**
+
 - **Localisation** : quartiers ou rues visés et à éviter [à compléter]
-- **Surface** et **nombre de pièces**
-- **État** : les biens à rénover sont recherchés, c'est là que se crée la valeur
-- **DPE** : les passoires thermiques (F, G) sont souvent décotées. C'est une opportunité si le coût de la
-  rénovation énergétique est chiffré.
 - **Occupation** : libre (prioritaire) ou occupé (bail en cours, à prendre en compte dans le prix et le délai)
-- **Potentiel de valorisation** : division en plusieurs lots, création de surface (combles, surélévation),
-  changement d'usage (local → habitation), redistribution des pièces, extérieur à créer
 
 ### Signaux d'opportunité
 
